@@ -18,6 +18,8 @@ namespace FunClicker.Core
         public event Action<long> OnPointsChanged;
         public event Action<long, long> OnPointStatsChanged;
 
+        private double passivePointProgress;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -33,6 +35,21 @@ namespace FunClicker.Core
         {
             OnPointsChanged?.Invoke(currentPoints);
             OnPointStatsChanged?.Invoke(baseScorePerClick, scorePerSecond);
+        }
+
+        private void Update()
+        {
+            if (scorePerSecond <= 0)
+                return;
+
+            passivePointProgress += scorePerSecond * Time.deltaTime;
+
+            long wholePoints = (long)passivePointProgress;
+            if (wholePoints <= 0)
+                return;
+
+            passivePointProgress -= wholePoints;
+            AddPoints(wholePoints);
         }
 
         public void AddPoints(long amount)
@@ -58,6 +75,7 @@ namespace FunClicker.Core
         public void SetScorePerSecond(long value)
         {
             scorePerSecond = Math.Max(0, value);
+            passivePointProgress = 0;
             OnPointStatsChanged?.Invoke(baseScorePerClick, scorePerSecond);
         }
 

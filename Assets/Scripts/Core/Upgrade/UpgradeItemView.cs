@@ -1,4 +1,5 @@
 using FunClicker.Upgrades;
+using FunClicker.Core;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,14 +8,20 @@ namespace FunClicker.UI
 {
     public class UpgradeItemView : MonoBehaviour
     {
+        [SerializeField] private Button itemButton;
         [SerializeField] private Image iconImage;
         [SerializeField] private TextMeshProUGUI nameText;
+        [SerializeField] private TextMeshProUGUI typeText;
         [SerializeField] private TextMeshProUGUI descText;
         [SerializeField] private TextMeshProUGUI costText;
         [SerializeField] private TextMeshProUGUI countText;
-        [SerializeField] private Button buyButton;
 
         private UpgradeSO currentUpgrade;
+
+        private void Reset()
+        {
+            itemButton = GetComponent<Button>();
+        }
 
         public void Setup(UpgradeSO upgrade, int purchasedCount)
         {
@@ -26,20 +33,43 @@ namespace FunClicker.UI
             if (nameText != null)
                 nameText.text = upgrade.displayName;
 
+            if (typeText != null)
+                typeText.text = upgrade.upgradeType == UpgradeType.PointPerClick ? "PPC" : "PPS";
+
             if (descText != null)
                 descText.text = upgrade.Description;
 
             if (costText != null)
-                costText.text = upgrade.cost.ToString();
+                costText.text = $"Cost: {upgrade.cost}";
 
             if (countText != null)
-                countText.text = purchasedCount.ToString();
+                countText.text = $"Lv. {purchasedCount}";
 
-            if (buyButton != null)
+            if (itemButton != null)
             {
-                buyButton.onClick.RemoveAllListeners();
-                buyButton.onClick.AddListener(OnClickBuy);
+                itemButton.onClick.RemoveAllListeners();
+                itemButton.onClick.AddListener(OnClickBuy);
             }
+
+            RefreshButtonState();
+        }
+
+        private void OnEnable()
+        {
+            if (PointManager.Instance != null)
+                PointManager.Instance.OnPointsChanged += HandlePointsChanged;
+
+            if (UpgradeManager.Instance != null)
+                UpgradeManager.Instance.OnUpgradeDataChanged += RefreshFromManager;
+        }
+
+        private void OnDisable()
+        {
+            if (PointManager.Instance != null)
+                PointManager.Instance.OnPointsChanged -= HandlePointsChanged;
+
+            if (UpgradeManager.Instance != null)
+                UpgradeManager.Instance.OnUpgradeDataChanged -= RefreshFromManager;
         }
 
         private void OnClickBuy()
@@ -53,7 +83,35 @@ namespace FunClicker.UI
             int newCount = UpgradeManager.Instance.GetPurchasedCount(currentUpgrade);
 
             if (countText != null)
-                countText.text = newCount.ToString();
+                countText.text = $"Lv. {newCount}";
+
+            RefreshButtonState();
+        }
+
+        private void HandlePointsChanged(long _)
+        {
+            RefreshButtonState();
+        }
+
+        private void RefreshFromManager()
+        {
+            if (currentUpgrade == null || UpgradeManager.Instance == null)
+                return;
+
+            int purchasedCount = UpgradeManager.Instance.GetPurchasedCount(currentUpgrade);
+
+            if (countText != null)
+                countText.text = $"Lv. {purchasedCount}";
+
+            RefreshButtonState();
+        }
+
+        private void RefreshButtonState()
+        {
+            if (itemButton == null || currentUpgrade == null || UpgradeManager.Instance == null)
+                return;
+
+            itemButton.interactable = UpgradeManager.Instance.CanBuy(currentUpgrade);
         }
     }
 }

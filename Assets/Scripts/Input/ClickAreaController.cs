@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+using System;
+using DG.Tweening;
 using FunClicker.Core;
 using FunClicker.UI;
 using UnityEngine;
@@ -30,13 +31,13 @@ namespace FunClicker.InputSystem
 
         private void Start()
         {
-            SyncBaseScorePerClickToManager();
+            InitializeBaseScorePerClick();
         }
 
         private void OnValidate()
         {
             if (!Application.isPlaying) return;
-            SyncBaseScorePerClickToManager();
+            InitializeBaseScorePerClick();
         }
 
         public void OnPointerDown(PointerEventData eventData)
@@ -50,7 +51,7 @@ namespace FunClicker.InputSystem
                 multiplier = ComboManager.Instance.RegisterClickAndGetMultiplier();
             }
 
-            long finalPoints = basePointsPerClick * multiplier;
+            long finalPoints = PointManager.Instance.BaseScorePerClick * multiplier;
 
             PointManager.Instance.AddPoints(finalPoints);
             PlayClickAnimation();
@@ -67,14 +68,14 @@ namespace FunClicker.InputSystem
 
         public void SetBasePointsPerClick(long newValue)
         {
-            basePointsPerClick = Mathf.Max(0, (int)newValue);
-            SyncBaseScorePerClickToManager();
+            basePointsPerClick = Math.Max(1L, newValue);
+            InitializeBaseScorePerClick();
         }
 
-        private void SyncBaseScorePerClickToManager()
+        private void InitializeBaseScorePerClick()
         {
             if (PointManager.Instance == null) return;
-            PointManager.Instance.SetBaseScorePerClick(basePointsPerClick);
+            PointManager.Instance.SetBaseScorePerClick(Math.Max(1L, basePointsPerClick));
         }
 
         private void PlayClickAnimation()
