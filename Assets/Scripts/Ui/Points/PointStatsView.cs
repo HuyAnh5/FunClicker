@@ -1,4 +1,5 @@
-﻿using FunClicker.Core;
+using FunClicker.Core;
+using FunClicker.Utils;
 using TMPro;
 using UnityEngine;
 
@@ -41,8 +42,8 @@ namespace FunClicker.UI
             if (statsText == null) return;
 
             statsText.text =
-                $"SPC: {basePerClick}\n" +
-                $"SPS: {perSecond}";
+                $"SPC: {NumberFormatter.Format(basePerClick)}\n" +
+                $"SPS: {NumberFormatter.Format(perSecond)}";
         }
     }
 }

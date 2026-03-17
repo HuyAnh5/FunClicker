@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77fa745061289fd428a1e5150f9e3b6f, type: 3}
+  m_Name: Skin_SO 1
+  m_EditorClassIdentifier: Assembly-CSharp::FunClicker.Data.SkinSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  icon: {fileID: 21300000, guid: 82bfe70f77339b2498909895e890b6d4, type: 3}
+  skinId: Skin_LV_2
+  displayName: 
+  requirementText: 
+  character:
+    comboX1: {fileID: 21300000, guid: 82bfe70f77339b2498909895e890b6d4, type: 3}
+    comboX2: {fileID: 21300000, guid: dd4b0b5092a956a4eb0f8e97745ab6c7, type: 3}
+    comboX4: {fileID: 21300000, guid: de524cc610cca994d8f87f0f635838f7, type: 3}
+  background:
+    comboX1: {fileID: 21300000, guid: f1af3e28bf5cb6440ad40174dce35be6, type: 3}
+    comboX2: {fileID: -5072592291100695330, guid: aba4b8de0113d904b858e837880848d3, type: 3}
+    comboX4: {fileID: 21300000, guid: 227bcb91b9faa14489013e9e22db9ea6, type: 3}

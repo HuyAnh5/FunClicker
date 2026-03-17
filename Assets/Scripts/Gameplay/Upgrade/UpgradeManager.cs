@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using FunClicker.Core;
+using FunClicker.Systems;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace FunClicker.Upgrades
@@ -13,6 +15,7 @@ namespace FunClicker.Upgrades
         [SerializeField] private List<UpgradeSO> upgrades = new();
 
         [Header("Runtime")]
+        [ListDrawerSettings(Expanded = true, DraggableItems = false, IsReadOnly = true)]
         [SerializeField] private List<UpgradeRuntimeData> runtimeData = new();
 
         public IReadOnlyList<UpgradeSO> Upgrades => upgrades;
@@ -37,6 +40,7 @@ namespace FunClicker.Upgrades
 
         private void BuildRuntimeData()
         {
+            runtimeData.RemoveAll(data => data == null || data.definition == null || !upgrades.Contains(data.definition));
             runtimeLookup.Clear();
 
             foreach (var upgrade in upgrades)
@@ -54,6 +58,17 @@ namespace FunClicker.Upgrades
                 runtimeLookup[upgrade.upgradeId] = existing;
             }
         }
+
+#if UNITY_EDITOR
+        [Button("Sync Definitions To Runtime")]
+        [PropertySpace(SpaceBefore = 8, SpaceAfter = 8)]
+        private void SyncDefinitionsToRuntime()
+        {
+            BuildRuntimeData();
+            OnUpgradeDataChanged?.Invoke();
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+#endif
 
         public int GetPurchasedCount(UpgradeSO upgrade)
         {
@@ -101,6 +116,46 @@ namespace FunClicker.Upgrades
             OnUpgradeDataChanged?.Invoke();
 
             return true;
+        }
+
+        public void LoadProgress(List<UpgradeProgressData> savedUpgrades)
+        {
+            for (int i = 0; i < runtimeData.Count; i++)
+            {
+                if (runtimeData[i] != null)
+                    runtimeData[i].purchasedCount = 0;
+            }
+
+            if (savedUpgrades != null)
+            {
+                for (int i = 0; i < savedUpgrades.Count; i++)
+                {
+                    UpgradeProgressData savedEntry = savedUpgrades[i];
+                    if (savedEntry == null || string.IsNullOrWhiteSpace(savedEntry.upgradeId))
+                        continue;
+
+                    if (runtimeLookup.TryGetValue(savedEntry.upgradeId, out var data))
+                        data.purchasedCount = Mathf.Max(0, savedEntry.purchasedCount);
+                }
+            }
+
+            OnUpgradeDataChanged?.Invoke();
+        }
+
+        public List<UpgradeProgressData> CaptureProgress()
+        {
+            List<UpgradeProgressData> saveData = new();
+
+            for (int i = 0; i < runtimeData.Count; i++)
+            {
+                UpgradeRuntimeData data = runtimeData[i];
+                if (data?.definition == null || string.IsNullOrWhiteSpace(data.definition.upgradeId))
+                    continue;
+
+                saveData.Add(new UpgradeProgressData(data.definition.upgradeId, data.purchasedCount));
+            }
+
+            return saveData;
         }
 
         private void ApplyUpgrade(UpgradeSO upgrade)

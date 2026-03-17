@@ -1,5 +1,6 @@
-using FunClicker.Upgrades;
 using FunClicker.Core;
+using FunClicker.Upgrades;
+using FunClicker.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,13 +38,15 @@ namespace FunClicker.UI
                 typeText.text = upgrade.upgradeType == UpgradeType.PointPerClick ? "PPC" : "PPS";
 
             if (descText != null)
-                descText.text = upgrade.Description;
+                descText.text = upgrade.upgradeType == UpgradeType.PointPerClick
+                    ? $"+{NumberFormatter.Format(upgrade.bonusAmount)} score/click"
+                    : $"+{NumberFormatter.Format(upgrade.bonusAmount)} score/second";
 
             if (costText != null)
-                costText.text = $"Cost: {upgrade.cost}";
+                costText.text = NumberFormatter.Format(upgrade.cost);
 
             if (countText != null)
-                countText.text = $"Lv. {purchasedCount}";
+                countText.text = NumberFormatter.Format(purchasedCount);
 
             if (itemButton != null)
             {
@@ -83,7 +86,7 @@ namespace FunClicker.UI
             int newCount = UpgradeManager.Instance.GetPurchasedCount(currentUpgrade);
 
             if (countText != null)
-                countText.text = $"Lv. {newCount}";
+                countText.text = NumberFormatter.Format(newCount);
 
             RefreshButtonState();
         }
@@ -101,7 +104,7 @@ namespace FunClicker.UI
             int purchasedCount = UpgradeManager.Instance.GetPurchasedCount(currentUpgrade);
 
             if (countText != null)
-                countText.text = $"Lv. {purchasedCount}";
+                countText.text = NumberFormatter.Format(purchasedCount);
 
             RefreshButtonState();
         }

@@ -19,6 +19,10 @@ namespace FunClicker.Data
         [LabelWidth(90)]
         public string displayName;
 
+        [VerticalGroup("Info/Right")]
+        [LabelWidth(90)]
+        public string requirementText;
+
         [Space(10)]
         [Title("Character Sprites")]
         [InlineProperty, HideLabel]
@@ -37,6 +41,14 @@ namespace FunClicker.Data
         public Sprite GetBackgroundSprite(int multiplier)
         {
             return background.GetByMultiplier(multiplier);
+        }
+
+        public Sprite GetPreviewSprite()
+        {
+            if (icon != null)
+                return icon;
+
+            return character.GetByMultiplier(1);
         }
     }
 

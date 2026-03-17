@@ -18,7 +18,9 @@ namespace FunClicker.Core
         public event Action<long> OnPointsChanged;
         public event Action<long, long> OnPointStatsChanged;
 
-        private double passivePointProgress;
+        private const float PassiveIncomeTickInterval = 1f;
+
+        private float passiveIncomeTickTimer;
 
         private void Awake()
         {
@@ -42,14 +44,14 @@ namespace FunClicker.Core
             if (scorePerSecond <= 0)
                 return;
 
-            passivePointProgress += scorePerSecond * Time.deltaTime;
+            passiveIncomeTickTimer += Time.deltaTime;
 
-            long wholePoints = (long)passivePointProgress;
-            if (wholePoints <= 0)
+            int completedTicks = Mathf.FloorToInt(passiveIncomeTickTimer / PassiveIncomeTickInterval);
+            if (completedTicks <= 0)
                 return;
 
-            passivePointProgress -= wholePoints;
-            AddPoints(wholePoints);
+            passiveIncomeTickTimer -= completedTicks * PassiveIncomeTickInterval;
+            AddPoints(scorePerSecond * completedTicks);
         }
 
         public void AddPoints(long amount)
@@ -75,7 +77,7 @@ namespace FunClicker.Core
         public void SetScorePerSecond(long value)
         {
             scorePerSecond = Math.Max(0, value);
-            passivePointProgress = 0;
+            passiveIncomeTickTimer = 0f;
             OnPointStatsChanged?.Invoke(baseScorePerClick, scorePerSecond);
         }
 

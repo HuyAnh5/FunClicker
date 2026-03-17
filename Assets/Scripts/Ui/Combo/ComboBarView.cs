@@ -9,9 +9,7 @@ namespace FunClicker.UI
     public class ComboBarView : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private RectTransform fillArea;
-        [SerializeField] private RectTransform fillRect;
-        [SerializeField] private Image fillGraphic;
+        [SerializeField] private Image fillImage;
         [SerializeField] private TextMeshProUGUI multiplierText;
         [SerializeField] private Transform multiplierVisual;
 
@@ -54,11 +52,11 @@ namespace FunClicker.UI
 
         private void UpdateComboView(float comboValue, int multiplier)
         {
-            UpdateFillHeight(comboValue);
+            UpdateFillAmount(comboValue);
 
-            if (fillGraphic != null)
+            if (fillImage != null)
             {
-                fillGraphic.color = GetColor(multiplier);
+                fillImage.color = GetColor(multiplier);
             }
 
             if (multiplierText != null)
@@ -68,19 +66,18 @@ namespace FunClicker.UI
             }
         }
 
-        private void UpdateFillHeight(float normalizedValue)
+        private void UpdateFillAmount(float normalizedValue)
         {
-            if (fillArea == null || fillRect == null)
+            if (fillImage == null)
                 return;
 
-            float targetHeight = fillArea.rect.height * Mathf.Clamp01(normalizedValue);
+            float targetFill = Mathf.Clamp01(normalizedValue);
 
             fillTween?.Kill();
 
-            Vector2 currentSize = fillRect.sizeDelta;
-            Vector2 targetSize = new Vector2(currentSize.x, targetHeight);
-
-            fillTween = fillRect.DOSizeDelta(targetSize, fillTweenDuration).SetEase(Ease.OutQuad);
+            fillTween = DOTween
+                .To(() => fillImage.fillAmount, value => fillImage.fillAmount = value, targetFill, fillTweenDuration)
+                .SetEase(Ease.OutQuad);
         }
 
         private void PlayMultiplierPulse(int multiplier)

@@ -1,4 +1,5 @@
-﻿using FunClicker.Core;
+using FunClicker.Core;
+using FunClicker.Utils;
 using TMPro;
 using UnityEngine;
 
@@ -39,7 +40,7 @@ namespace FunClicker.UI
         private void UpdateView(long points)
         {
             if (pointText == null) return;
-            pointText.text = $"Score\n{points}";
+            pointText.text = $"Score\n{NumberFormatter.Format(points)}";
         }
     }
 }

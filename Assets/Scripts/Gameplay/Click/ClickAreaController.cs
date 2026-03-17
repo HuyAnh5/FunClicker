@@ -2,6 +2,8 @@ using System;
 using DG.Tweening;
 using FunClicker.Core;
 using FunClicker.UI;
+using FunClicker.UI.Effects;
+using FunClicker.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -20,6 +22,9 @@ namespace FunClicker.InputSystem
         [Header("Floating Popup")]
         [SerializeField] private FloatingScorePopupSpawner popupSpawner;
 
+        [Header("Burst Effect")]
+        [SerializeField] private ClickParticleBurstSpawner burstEffectSpawner;
+
         private Tween currentTween;
         private Vector3 originalScale;
 
@@ -29,18 +34,12 @@ namespace FunClicker.InputSystem
                 originalScale = clickVisual.localScale;
         }
 
-        private void Start()
-        {
-            InitializeBaseScorePerClick();
-        }
-
-        private void OnValidate()
-        {
-            if (!Application.isPlaying) return;
-            InitializeBaseScorePerClick();
-        }
-
         public void OnPointerDown(PointerEventData eventData)
+        {
+            HandleClick(eventData.position, eventData.pressEventCamera);
+        }
+
+        public void HandleClick(Vector2 screenPosition, Camera eventCamera = null)
         {
             if (PointManager.Instance == null)
                 return;
@@ -59,23 +58,23 @@ namespace FunClicker.InputSystem
             if (popupSpawner != null)
             {
                 popupSpawner.SpawnAtScreenPosition(
-                    eventData.position,
-                    eventData.pressEventCamera,
-                    $"+{finalPoints}"
+                    screenPosition,
+                    eventCamera,
+                    $"+{NumberFormatter.Format(finalPoints)}"
                 );
+            }
+
+            if (burstEffectSpawner != null)
+            {
+                burstEffectSpawner.SpawnAtScreenPosition(screenPosition, eventCamera);
             }
         }
 
         public void SetBasePointsPerClick(long newValue)
         {
             basePointsPerClick = Math.Max(1L, newValue);
-            InitializeBaseScorePerClick();
-        }
-
-        private void InitializeBaseScorePerClick()
-        {
-            if (PointManager.Instance == null) return;
-            PointManager.Instance.SetBaseScorePerClick(Math.Max(1L, basePointsPerClick));
+            if (PointManager.Instance != null)
+                PointManager.Instance.SetBaseScorePerClick(basePointsPerClick);
         }
 
         private void PlayClickAnimation()

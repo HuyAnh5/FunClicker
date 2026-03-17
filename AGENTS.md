@@ -310,3 +310,11 @@ Fun Clicker currently revolves around:
 * fixed repeated upgrade cards for PPC and SPS
 
 The immediate next milestone is to finish the **upgrade system and upgrade popup flow**, then connect **real SPS generation**, then move to **save/load** and broader idle features.
+<!-- UNITY CODE ASSIST INSTRUCTIONS START -->
+- Project name: FunClicker
+- Unity version: Unity 6000.2.15f1
+- Active game object:
+  - Name: SkinManager
+  - Tag: Untagged
+  - Layer: UI
+<!-- UNITY CODE ASSIST INSTRUCTIONS END -->

@@ -40,10 +40,49 @@ namespace FunClicker.UI
             if (panelRoot == null)
                 return;
 
+            if (isVisible && !ExclusivePanelCoordinator.TryOpen(panelRoot))
+                return;
+
             panelRoot.SetActive(isVisible);
 
-            if (isVisible && upgradeListView != null)
+            if (!isVisible)
+            {
+                ExclusivePanelCoordinator.Close(panelRoot);
+                return;
+            }
+
+            if (upgradeListView != null)
                 upgradeListView.Rebuild();
+        }
+    }
+
+    internal static class ExclusivePanelCoordinator
+    {
+        private static GameObject activePanelRoot;
+
+        public static bool HasOpenPanel => activePanelRoot != null && activePanelRoot.activeSelf;
+
+        public static bool TryOpen(GameObject panelRoot)
+        {
+            if (panelRoot == null)
+                return false;
+
+            if (activePanelRoot == null || activePanelRoot == panelRoot || !activePanelRoot.activeSelf)
+            {
+                activePanelRoot = panelRoot;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static void Close(GameObject panelRoot)
+        {
+            if (panelRoot == null)
+                return;
+
+            if (activePanelRoot == panelRoot)
+                activePanelRoot = null;
         }
     }
 }
